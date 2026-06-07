@@ -1,0 +1,2242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSTR Infrastructures & Projects — Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --steel: #141820;
+    --panel: #1a1f2e;
+    --border: #2a3040;
+    --gold: #c8a84b;
+    --gold-dim: #8a6e2a;
+    --amber: #e8b84b;
+    --white: #f0ece4;
+    --muted: #7a8090;
+    --accent: #4a7fc1;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 48px;
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 3px;
+    color: var(--gold);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--gold); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 40%, rgba(200,168,75,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 80% at 10% 80%, rgba(74,127,193,0.05) 0%, transparent 50%),
+      linear-gradient(180deg, #0a0a0a 0%, #0d1018 100%);
+  }
+
+  /* Grid lines */
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(42,48,64,0.4) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(42,48,64,0.4) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.6) 100%);
+  }
+
+  /* Depth indicator lines */
+  .depth-lines {
+    position: absolute;
+    right: 80px;
+    top: 140px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    opacity: 0.5;
+  }
+
+  .depth-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: fadeInRight 0.6s both;
+  }
+
+  .depth-line:nth-child(1) { animation-delay: 0.8s; }
+  .depth-line:nth-child(2) { animation-delay: 1.0s; }
+  .depth-line:nth-child(3) { animation-delay: 1.2s; }
+  .depth-line:nth-child(4) { animation-delay: 1.4s; }
+  .depth-line:nth-child(5) { animation-delay: 1.6s; }
+
+  .depth-line .tick {
+    width: 20px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .depth-line .depth-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--gold-dim);
+    letter-spacing: 1px;
+  }
+
+  .depth-connector {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(180deg, var(--gold-dim), transparent);
+    margin-left: 10px;
+  }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(64px, 10vw, 140px);
+    line-height: 0.9;
+    letter-spacing: 2px;
+    color: var(--white);
+    margin-bottom: 8px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+
+  .hero-title span {
+    color: var(--gold);
+    display: block;
+  }
+
+  .hero-sub {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(28px, 4vw, 52px);
+    letter-spacing: 4px;
+    color: var(--muted);
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+
+  .hero-desc {
+    max-width: 540px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--muted);
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 60px;
+    opacity: 0;
+    animation: fadeUp 0.8s 1.0s forwards;
+  }
+
+  .stat-item {}
+
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 32px;
+    right: 48px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeIn 1s 1.5s forwards;
+  }
+
+  .hero-scroll span {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .scroll-line {
+    width: 40px;
+    height: 1px;
+    background: var(--muted);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scroll-line::after {
+    content: '';
+    position: absolute;
+    left: -100%;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--gold);
+    animation: scrollAnim 2s 2s infinite;
+  }
+
+  /* ── SECTION BASE ── */
+  section {
+    padding: 100px 48px;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 32px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 6vw, 80px);
+    letter-spacing: 2px;
+    line-height: 1;
+    margin-bottom: 60px;
+  }
+
+  /* ── ABOUT ── */
+  .about {
+    background: var(--steel);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .about-text p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .about-text p strong {
+    color: var(--white);
+    font-weight: 500;
+  }
+
+  .about-details {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .detail-key {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    flex-shrink: 0;
+    width: 140px;
+  }
+
+  .detail-val {
+    font-size: 14px;
+    color: var(--white);
+    text-align: right;
+    line-height: 1.5;
+  }
+
+  /* ── SERVICES ── */
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .service-card {
+    background: var(--panel);
+    padding: 40px 32px;
+    border: 1px solid var(--border);
+    transition: border-color 0.3s, background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .service-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 0;
+    background: var(--gold);
+    transition: height 0.3s;
+  }
+
+  .service-card:hover::before { height: 100%; }
+  .service-card:hover { border-color: var(--gold-dim); background: #1e2332; }
+
+  .service-icon {
+    font-size: 32px;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .service-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gold-dim);
+    margin-bottom: 12px;
+  }
+
+  .service-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 2px;
+    color: var(--white);
+    margin-bottom: 12px;
+  }
+
+  .service-desc {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+
+  /* ── PROJECTS ── */
+  .projects { background: var(--black); }
+
+  .project-card {
+    border: 1px solid var(--border);
+    margin-bottom: 2px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .project-card:hover { border-color: var(--gold-dim); }
+
+  .project-header {
+    display: grid;
+    grid-template-columns: 80px 1fr auto auto;
+    align-items: center;
+    gap: 32px;
+    padding: 28px 40px;
+    cursor: pointer;
+    background: var(--panel);
+    transition: background 0.2s;
+  }
+
+  .project-header:hover { background: #1e2332; }
+
+  .project-index {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--border);
+    line-height: 1;
+  }
+
+  .project-client {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .project-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1px;
+    color: var(--white);
+  }
+
+  .project-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--gold);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .project-year {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    min-width: 60px;
+    text-align: right;
+  }
+
+  .project-body {
+    display: none;
+    padding: 0 40px 32px 152px;
+    background: var(--steel);
+    border-top: 1px solid var(--border);
+  }
+
+  .project-body.open { display: block; }
+
+  .project-meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+
+  .meta-item {}
+
+  .meta-key {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .meta-val {
+    font-size: 14px;
+    color: var(--white);
+    line-height: 1.5;
+  }
+
+  .project-work-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .project-work-list li {
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    line-height: 1.6;
+  }
+
+  .project-work-list li::before {
+    content: '▸';
+    color: var(--gold);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── LOCATIONS ── */
+  .locations { background: var(--steel); }
+
+  .locations-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .location-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 36px 32px;
+    position: relative;
+  }
+
+  .location-city {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .city-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--gold);
+    flex-shrink: 0;
+  }
+
+  .location-sites {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .location-sites li {
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .location-sites li:last-child { border-bottom: none; }
+
+  .location-sites li::before {
+    content: '—';
+    color: var(--border);
+    flex-shrink: 0;
+  }
+
+  /* ── CLIENTS ── */
+  .clients { background: var(--black); }
+
+  .clients-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+  }
+
+  .client-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 32px 24px;
+    text-align: center;
+    transition: border-color 0.3s, background 0.3s;
+  }
+
+  .client-card:hover {
+    border-color: var(--gold-dim);
+    background: #1e2332;
+  }
+
+  .client-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+
+  .client-type {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--muted);
+  }
+
+  /* ── CONTACT ── */
+  .contact {
+    background: var(--steel);
+    border-top: 1px solid var(--border);
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .contact-item {}
+
+  .contact-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .contact-value {
+    font-size: 16px;
+    color: var(--white);
+    line-height: 1.6;
+  }
+
+  .contact-value a {
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  .contact-tagline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(32px, 5vw, 64px);
+    letter-spacing: 2px;
+    line-height: 1.05;
+    color: var(--white);
+  }
+
+  .contact-tagline span { color: var(--gold); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--black);
+    border-top: 1px solid var(--border);
+    padding: 32px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 3px;
+    color: var(--gold);
+  }
+
+  .footer-copy {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--muted);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fadeInRight {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 0.5; transform: translateX(0); }
+  }
+
+  @keyframes scrollAnim {
+    0% { left: -100%; }
+    50% { left: 0; }
+    100% { left: 100%; }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── ACCORDION TOGGLE ── */
+  .toggle-icon {
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    color: var(--muted);
+    flex-shrink: 0;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .project-card.open .toggle-icon {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* ── TICKER ── */
+  .ticker-wrap {
+    overflow: hidden;
+    background: var(--gold);
+    padding: 12px 0;
+    border-top: 1px solid var(--gold-dim);
+    border-bottom: 1px solid var(--gold-dim);
+  }
+
+  .ticker-track {
+    display: flex;
+    width: max-content;
+    animation: ticker 30s linear infinite;
+  }
+
+  .ticker-item {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 3px;
+    color: var(--black);
+    padding: 0 40px;
+    white-space: nowrap;
+  }
+
+  .ticker-dot {
+    color: rgba(0,0,0,0.4);
+  }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  @keyframes tickerReverse {
+    from { transform: translateX(-50%); }
+    to { transform: translateX(0); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    section { padding: 70px 24px; }
+    .hero { padding: 0 24px 60px; }
+    .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+    .services-grid { grid-template-columns: 1fr; }
+    .clients-grid { grid-template-columns: repeat(2, 1fr); }
+    .locations-grid { grid-template-columns: 1fr; }
+    .project-header { grid-template-columns: 1fr auto; gap: 16px; padding: 20px 24px; }
+    .project-index { display: none; }
+    .project-body { padding: 20px 24px; }
+    .project-meta { grid-template-columns: 1fr 1fr; }
+    .hero-stats { gap: 32px; }
+    .depth-lines { display: none; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">DSTR.INFRA</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#locations">Locations</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <div class="depth-lines">
+    <div class="depth-line"><div class="tick"></div><div class="depth-label">0m — SURFACE</div></div>
+    <div class="depth-connector"></div>
+    <div class="depth-line"><div class="tick"></div><div class="depth-label">15m — SOFT STRATA</div></div>
+    <div class="depth-connector"></div>
+    <div class="depth-line"><div class="tick"></div><div class="depth-label">30m — HARD SOIL</div></div>
+    <div class="depth-connector"></div>
+    <div class="depth-line"><div class="tick"></div><div class="depth-label">50m — ROCK</div></div>
+    <div class="depth-connector"></div>
+    <div class="depth-line"><div class="tick"></div><div class="depth-label">150m — DEEP BORE</div></div>
+  </div>
+
+  <!-- Animated Piling Rig SVG -->
+  <div style="position:absolute;right:6%;bottom:0;z-index:0;opacity:0.13;pointer-events:none;animation:fadeIn 2s 0.5s both;">
+    <svg viewBox="0 0 320 600" width="320" height="600" xmlns="http://www.w3.org/2000/svg">
+      <!-- Ground line -->
+      <line x1="0" y1="540" x2="320" y2="540" stroke="#c8a84b" stroke-width="1.5"/>
+      <line x1="0" y1="548" x2="320" y2="548" stroke="#c8a84b" stroke-width="0.5" opacity="0.4"/>
+
+      <!-- Underground bore hole -->
+      <ellipse cx="160" cy="540" rx="28" ry="7" fill="none" stroke="#c8a84b" stroke-width="1"/>
+      <rect x="132" y="540" width="56" height="50" fill="#0a0a0a" opacity="0.8"/>
+      <!-- Depth markings underground -->
+      <line x1="132" y1="555" x2="145" y2="555" stroke="#c8a84b" stroke-width="0.5" opacity="0.4"/>
+      <line x1="132" y1="568" x2="140" y2="568" stroke="#c8a84b" stroke-width="0.5" opacity="0.3"/>
+      <line x1="132" y1="582" x2="145" y2="582" stroke="#c8a84b" stroke-width="0.5" opacity="0.2"/>
+
+      <!-- CRAWLER BASE -->
+      <rect x="40" y="510" width="240" height="32" fill="#1e2535" stroke="#c8a84b" stroke-width="1" rx="4"/>
+      <!-- Crawler track detail -->
+      <rect x="38" y="514" width="244" height="24" fill="none" stroke="#c8a84b" stroke-width="0.5" rx="12" opacity="0.5"/>
+      <line x1="70" y1="514" x2="70" y2="538" stroke="#c8a84b" stroke-width="0.5" opacity="0.3"/>
+      <line x1="100" y1="514" x2="100" y2="538" stroke="#c8a84b" stroke-width="0.5" opacity="0.3"/>
+      <line x1="130" y1="514" x2="130" y2="538" stroke="#c8a84b" stroke-width="0.5" opacity="0.3"/>
+      <line x1="160" y1="514" x2="160" y2="538" stroke="#c8a84b" stroke-width="0.5" opacity="0.3"/>
+      <line x1="190" y1="514" x2="190" y2="538" stroke="#c8a84b" stroke-width="0.5" opacity="0.3"/>
+      <line x1="220" y1="514" x2="220" y2="538" stroke="#c8a84b" stroke-width="0.5" opacity="0.3"/>
+      <line x1="250" y1="514" x2="250" y2="538" stroke="#c8a84b" stroke-width="0.5" opacity="0.3"/>
+      <!-- Sprockets -->
+      <circle cx="55" cy="526" r="13" fill="#141820" stroke="#c8a84b" stroke-width="1.2"/>
+      <circle cx="55" cy="526" r="6" fill="#c8a84b" opacity="0.3"/>
+      <circle cx="265" cy="526" r="13" fill="#141820" stroke="#c8a84b" stroke-width="1.2"/>
+      <circle cx="265" cy="526" r="6" fill="#c8a84b" opacity="0.3"/>
+
+      <!-- RIG BODY / CABIN -->
+      <rect x="60" y="440" width="200" height="74" fill="#1a1f2e" stroke="#c8a84b" stroke-width="1" rx="3"/>
+      <!-- Cabin window -->
+      <rect x="68" y="450" width="55" height="35" fill="#0d1525" stroke="#c8a84b" stroke-width="0.8" rx="2"/>
+      <line x1="95" y1="450" x2="95" y2="485" stroke="#c8a84b" stroke-width="0.5" opacity="0.4"/>
+      <line x1="68" y1="467" x2="123" y2="467" stroke="#c8a84b" stroke-width="0.5" opacity="0.4"/>
+      <!-- Engine/hydraulic panels -->
+      <rect x="140" y="450" width="110" height="55" fill="#141820" stroke="#c8a84b" stroke-width="0.5" rx="2" opacity="0.7"/>
+      <circle cx="160" cy="470" r="8" fill="none" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+      <circle cx="185" cy="470" r="8" fill="none" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+      <circle cx="210" cy="470" r="8" fill="none" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+      <rect x="150" y="488" width="90" height="6" fill="#c8a84b" opacity="0.15" rx="1"/>
+
+      <!-- MAST / LEADER -->
+      <!-- Main mast uprights -->
+      <rect x="148" y="30" width="10" height="415" fill="#2a3a50" stroke="#c8a84b" stroke-width="0.8" rx="1"/>
+      <rect x="162" y="30" width="10" height="415" fill="#2a3a50" stroke="#c8a84b" stroke-width="0.8" rx="1"/>
+      <!-- Mast cross braces -->
+      <line x1="148" y1="60" x2="172" y2="80" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+      <line x1="172" y1="60" x2="148" y2="80" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+      <line x1="148" y1="110" x2="172" y2="130" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+      <line x1="172" y1="110" x2="148" y2="130" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+      <line x1="148" y1="160" x2="172" y2="180" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+      <line x1="172" y1="160" x2="148" y2="180" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+      <line x1="148" y1="210" x2="172" y2="230" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+      <line x1="172" y1="210" x2="148" y2="230" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+      <line x1="148" y1="260" x2="172" y2="280" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+      <line x1="172" y1="260" x2="148" y2="280" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+      <line x1="148" y1="310" x2="172" y2="330" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+      <line x1="172" y1="310" x2="148" y2="330" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+      <line x1="148" y1="360" x2="172" y2="380" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+      <line x1="172" y1="360" x2="148" y2="380" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+      <line x1="148" y1="405" x2="172" y2="420" stroke="#c8a84b" stroke-width="0.8" opacity="0.4"/>
+      <!-- Mast cap -->
+      <polygon points="148,30 155,10 165,10 172,30" fill="#2a3a50" stroke="#c8a84b" stroke-width="0.8"/>
+      <!-- Top pulley wheel -->
+      <circle cx="160" cy="22" r="12" fill="#141820" stroke="#c8a84b" stroke-width="1.2"/>
+      <circle cx="160" cy="22" r="5" fill="#c8a84b" opacity="0.4"/>
+      <!-- Pulley spokes -->
+      <line x1="160" y1="12" x2="160" y2="32" stroke="#c8a84b" stroke-width="0.8" opacity="0.4"/>
+      <line x1="150" y1="22" x2="170" y2="22" stroke="#c8a84b" stroke-width="0.8" opacity="0.4"/>
+
+      <!-- KELLY BAR / DRILL STRING (animated) -->
+      <rect x="155" y="22" width="10" height="520" fill="#3a4a5a" rx="2">
+        <animate attributeName="y" values="22;32;22" dur="3s" repeatCount="indefinite"/>
+        <animate attributeName="height" values="520;510;520" dur="3s" repeatCount="indefinite"/>
+      </rect>
+      <!-- Kelly bar highlight -->
+      <rect x="157" y="22" width="2" height="520" fill="#c8a84b" opacity="0.2" rx="1">
+        <animate attributeName="y" values="22;32;22" dur="3s" repeatCount="indefinite"/>
+        <animate attributeName="height" values="520;510;520" dur="3s" repeatCount="indefinite"/>
+      </rect>
+
+      <!-- AUGER FLIGHTING (rotates) -->
+      <g transform="translate(160,400)" style="transform-origin:160px 400px;">
+        <animateTransform attributeName="transform" type="rotate" from="0 160 400" to="360 160 400" dur="4s" repeatCount="indefinite"/>
+        <path d="M0,-60 Q18,-50 0,-40 Q-18,-30 0,-20 Q18,-10 0,0 Q-18,10 0,20 Q18,30 0,40 Q-18,50 0,60" fill="none" stroke="#c8a84b" stroke-width="2.5" opacity="0.8"/>
+      </g>
+
+      <!-- Drill bit -->
+      <polygon points="150,540 170,540 174,558 146,558" fill="#c8a84b" opacity="0.8">
+        <animate attributeName="points" values="150,540 170,540 174,558 146,558;150,550 170,550 174,568 146,568;150,540 170,540 174,558 146,558" dur="3s" repeatCount="indefinite"/>
+      </polygon>
+
+      <!-- HYDRAULIC ARMS / OUTRIGGERS -->
+      <line x1="60" y1="470" x2="20" y2="510" stroke="#c8a84b" stroke-width="1.5" opacity="0.5"/>
+      <rect x="8" y="508" width="20" height="6" fill="#c8a84b" opacity="0.3" rx="2"/>
+      <line x1="260" y1="470" x2="300" y2="510" stroke="#c8a84b" stroke-width="1.5" opacity="0.5"/>
+      <rect x="292" y="508" width="20" height="6" fill="#c8a84b" opacity="0.3" rx="2"/>
+
+      <!-- Winch rope from mast top -->
+      <line x1="160" y1="22" x2="90" y2="455" stroke="#c8a84b" stroke-width="0.8" stroke-dasharray="4,3" opacity="0.3"/>
+      <line x1="160" y1="22" x2="230" y2="455" stroke="#c8a84b" stroke-width="0.8" stroke-dasharray="4,3" opacity="0.3"/>
+
+      <!-- Depth scale on the side -->
+      <line x1="30" y1="100" x2="30" y2="540" stroke="#c8a84b" stroke-width="0.5" opacity="0.3"/>
+      <line x1="26" y1="100" x2="34" y2="100" stroke="#c8a84b" stroke-width="0.8" opacity="0.4"/>
+      <text x="10" y="103" fill="#c8a84b" font-size="9" font-family="monospace" opacity="0.5">0m</text>
+      <line x1="26" y1="200" x2="34" y2="200" stroke="#c8a84b" stroke-width="0.8" opacity="0.4"/>
+      <text x="4" y="203" fill="#c8a84b" font-size="9" font-family="monospace" opacity="0.4">30m</text>
+      <line x1="26" y1="320" x2="34" y2="320" stroke="#c8a84b" stroke-width="0.8" opacity="0.3"/>
+      <text x="4" y="323" fill="#c8a84b" font-size="9" font-family="monospace" opacity="0.3">60m</text>
+      <line x1="26" y1="440" x2="34" y2="440" stroke="#c8a84b" stroke-width="0.8" opacity="0.2"/>
+      <text x="1" y="443" fill="#c8a84b" font-size="9" font-family="monospace" opacity="0.2">100m</text>
+
+      <!-- Ground chips/cuttings animation -->
+      <circle cx="140" cy="535" r="2" fill="#c8a84b" opacity="0.5">
+        <animate attributeName="cy" values="535;500;470" dur="2s" repeatCount="indefinite" begin="0s"/>
+        <animate attributeName="opacity" values="0.5;0.3;0" dur="2s" repeatCount="indefinite" begin="0s"/>
+      </circle>
+      <circle cx="180" cy="535" r="1.5" fill="#c8a84b" opacity="0.4">
+        <animate attributeName="cy" values="535;495;460" dur="2.3s" repeatCount="indefinite" begin="0.5s"/>
+        <animate attributeName="opacity" values="0.4;0.2;0" dur="2.3s" repeatCount="indefinite" begin="0.5s"/>
+      </circle>
+      <circle cx="152" cy="535" r="1" fill="#c8a84b" opacity="0.3">
+        <animate attributeName="cy" values="535;505;475" dur="1.8s" repeatCount="indefinite" begin="1s"/>
+        <animate attributeName="opacity" values="0.3;0.15;0" dur="1.8s" repeatCount="indefinite" begin="1s"/>
+      </circle>
+
+      <!-- Company label on mast -->
+      <text x="185" y="280" fill="#c8a84b" font-size="10" font-family="monospace" letter-spacing="2" opacity="0.4" transform="rotate(90 185 280)">DSTR.INFRA</text>
+    </svg>
+  </div>
+
+  <div style="position:relative; z-index:1;">
+    <p class="hero-eyebrow">Est. Since 2012 · New Delhi, India</p>
+    <h1 class="hero-title">
+      DSTR
+      <span>Infrastructures</span>
+    </h1>
+    <p class="hero-sub">& Projects</p>
+    <p class="hero-desc">
+      Specialists in deep foundation drilling, soldier piling, borehole construction, and ground anchoring across India's critical metro corridors and international infrastructure projects.
+    </p>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">25+</div>
+        <div class="stat-label">Major Projects</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">₹70Cr+</div>
+        <div class="stat-label">Work Executed</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">8+</div>
+        <div class="stat-label">Cities</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">14+</div>
+        <div class="stat-label">Years Active</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- TICKER 1 — Services/Projects -->
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <span class="ticker-item">DELHI METRO PHASE III</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">SOLDIER PILING</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">MAHSR HIGH SPEED RAIL</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">LUCKNOW METRO</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">DTH DRILLING</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">MICRO PILING</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">BOREHOLE CONSTRUCTION</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">GROUND ANCHORING</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">HYDERABAD METRO</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">RC DRILLING</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">MUMBAI METRO LINE 3</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">AFRICA OPERATIONS</span><span class="ticker-item ticker-dot">◆</span>
+    <!-- duplicate -->
+    <span class="ticker-item">DELHI METRO PHASE III</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">SOLDIER PILING</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">MAHSR HIGH SPEED RAIL</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">LUCKNOW METRO</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">DTH DRILLING</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">MICRO PILING</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">BOREHOLE CONSTRUCTION</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">GROUND ANCHORING</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">HYDERABAD METRO</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">RC DRILLING</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">MUMBAI METRO LINE 3</span><span class="ticker-item ticker-dot">◆</span>
+    <span class="ticker-item">AFRICA OPERATIONS</span><span class="ticker-item ticker-dot">◆</span>
+  </div>
+</div>
+
+<!-- TICKER 2 — Clients (reverse direction, dark background) -->
+<div style="overflow:hidden;background:var(--steel);padding:14px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div style="display:flex;width:max-content;animation:tickerReverse 35s linear infinite;">
+
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">LARSEN &amp; TOUBRO</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">HCC · HINDUSTAN CONSTRUCTION</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">AFCONS INFRASTRUCTURE</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">TATA PROJECTS</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">FEMC–PRATIBHA JV</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">HCC–SAMSUNG JV</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">L&amp;T–SUCG JV</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">GULERMAK–TPL JV</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">ITD CEMENTATION</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">NCC–SOMA JV</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">DMRC</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">MAHSR CORPORATION</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--gold);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);font-weight:600;">SHAPOORJI PALLONJI GROUP</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">MMRDA</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">BANGALORE METRO RAIL CORP</span>
+
+    <!-- duplicate for seamless loop -->
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">LARSEN &amp; TOUBRO</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">HCC · HINDUSTAN CONSTRUCTION</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">AFCONS INFRASTRUCTURE</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">TATA PROJECTS</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">FEMC–PRATIBHA JV</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">HCC–SAMSUNG JV</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">L&amp;T–SUCG JV</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">GULERMAK–TPL JV</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">ITD CEMENTATION</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">NCC–SOMA JV</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">DMRC</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">MAHSR CORPORATION</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--gold);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);font-weight:600;">SHAPOORJI PALLONJI GROUP</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;border-right:1px solid var(--border);">MMRDA</span>
+    <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:2px;color:var(--muted);padding:0 36px;white-space:nowrap;">BANGALORE METRO RAIL CORP</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about" style="padding-bottom: 0;">
+  <div class="section-label">About Us</div>
+
+  <!-- ── TOP: INTRO + COMPANY DETAILS ── -->
+  <div class="about-grid" style="margin-bottom: 80px;">
+    <div>
+      <h2 class="section-title">Specialists in Deep<br>Foundation Works</h2>
+      <div class="about-text">
+        <p><strong>DSTR Infrastructures and Projects</strong> is a New Delhi-based specialist contractor with over 12 years of proven expertise in deep foundation engineering, drilling, and ground improvement works for India's most demanding infrastructure projects.</p>
+        <p>From the underground tunnels of the Delhi Metro to the high-speed rail corridors of Gujarat and the mining and infrastructure sites of the African continent, our teams operate with precision, discipline, and an unwavering commitment to delivering results in the most challenging ground conditions on earth.</p>
+        <p>We have been trusted by India's foremost construction companies — <strong>Larsen & Toubro, HCC, Afcons, TATA Projects</strong> — across multiple metro phases and national corridors, consistently meeting the exacting standards of DMRC and international clients alike.</p>
+      </div>
+    </div>
+    <div class="about-details">
+      <div class="detail-row">
+        <div class="detail-key">Company</div>
+        <div class="detail-val">DSTR Infrastructures and Projects</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-key">Contact Person</div>
+        <div class="detail-val">Mr. D. Sathi Reddy</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-key">Registered Address</div>
+        <div class="detail-val">L-2/143B, DDA Flats, Kalkaji<br>New Delhi — 110019, India</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-key">PAN</div>
+        <div class="detail-val">AAMFD6641A</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-key">GST</div>
+        <div class="detail-val">07AAMFD6641A1ZO</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-key">Operations</div>
+        <div class="detail-val">India &amp; Africa (Multi-Country)</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-key">Active Since</div>
+        <div class="detail-val">2012</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── COMPANY HISTORY ── -->
+  <div style="border-top: 1px solid var(--border); padding: 70px 0; margin-bottom: 0; position: relative; overflow: hidden;">
+
+    <!-- SVG background pattern: circuit / drill lines -->
+    <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.04;pointer-events:none;" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="drill-grid" width="80" height="80" patternUnits="userSpaceOnUse">
+          <circle cx="40" cy="40" r="1.5" fill="#c8a84b"/>
+          <line x1="40" y1="0" x2="40" y2="80" stroke="#c8a84b" stroke-width="0.5"/>
+          <line x1="0" y1="40" x2="80" y2="40" stroke="#c8a84b" stroke-width="0.5"/>
+          <circle cx="0" cy="0" r="1" fill="#c8a84b"/>
+          <circle cx="80" cy="0" r="1" fill="#c8a84b"/>
+          <circle cx="0" cy="80" r="1" fill="#c8a84b"/>
+          <circle cx="80" cy="80" r="1" fill="#c8a84b"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#drill-grid)"/>
+    </svg>
+
+    <div class="section-label" style="margin-bottom: 48px; position:relative;">Company History</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; position:relative;">
+
+      <!-- Story text -->
+      <div class="about-text">
+        <p>The story of <strong>DSTR Infrastructures and Projects</strong> began in <strong>2012</strong> with one man, one crew, and one single DTH piling rig. Founded by <strong>Mr. D. Sathi Reddy</strong> in New Delhi, the company was built from the ground up — literally — with a belief that discipline, quality workmanship, and technical skill could carve a place in India's highly competitive infrastructure sector.</p>
+        <p>Those early years were spent proving our worth on the corridors of the <strong>Delhi Metro</strong> — one of the world's most demanding urban infrastructure programmes. Working initially as a subcontractor to FEMC–Pratibha JV and Larsen & Toubro, we drilled, piled, and bored our way through some of New Delhi's most geologically complex ground, from soft alluvial soils to hard quartzite rock formations, delivering work that exceeded expectations every time.</p>
+        <p>With each completed project came reinvestment — new rigs, new equipment, new capabilities. By 2015, we were running multiple rigs simultaneously across different Metro packages: CC-17, CC-18, CC-23, CC-27, CC-34, and CC-66. What started as a single machine had become a <strong>growing fleet of DTH drilling rigs, truck-mounted drilling units, hydraulic piling rigs, and Reverse Circulation (RC) rigs</strong> capable of tackling the full spectrum of deep foundation and drilling requirements.</p>
+        <p>From 2016 onward, our India operations expanded well beyond Delhi — to <strong>Lucknow, Hyderabad, Mumbai, Bengaluru, Pune, Kolkata,</strong> and <strong>Surat</strong> — covering metro rail projects across the country. Simultaneously, <strong>since 2013 we have been operating in Africa</strong>, making DSTR one of very few Indian drilling contractors to run concurrent operations on two continents for over a decade. We are currently active in <strong>Mali, Ivory Coast, South Africa (Cape Town & Durban), Nigeria, and Ghana</strong>, with expansion underway into Zambia, Kenya, and Tanzania. The journey from one rig in New Delhi to a global fleet is not just our growth story — it is our identity.</p>
+      </div>
+
+      <!-- Timeline -->
+      <div style="display: flex; flex-direction: column;">
+        <div style="display:flex; gap:20px; padding-bottom:28px;">
+          <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+            <div style="width:13px;height:13px;border-radius:50%;background:var(--gold);margin-top:5px;box-shadow:0 0 8px var(--gold);"></div>
+            <div style="width:1px;flex:1;background:var(--border);margin-top:6px;min-height:36px;"></div>
+          </div>
+          <div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);letter-spacing:2px;">2012 — One Rig. One Mission.</div>
+            <div style="font-size:13px;color:var(--muted);line-height:1.65;margin-top:5px;">Established with a single DTH piling rig in New Delhi. First subcontracts on Delhi Metro under L&T and FEMC–Pratibha JV. Proved reliability in DMRC-grade conditions from day one.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:20px;padding-bottom:28px;">
+          <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+            <div style="width:13px;height:13px;border-radius:50%;background:var(--gold);margin-top:5px;"></div>
+            <div style="width:1px;flex:1;background:var(--border);margin-top:6px;min-height:36px;"></div>
+          </div>
+          <div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);letter-spacing:2px;">2013–2015 — Fleet Growth & Africa Begins</div>
+            <div style="font-size:13px;color:var(--muted);line-height:1.65;margin-top:5px;">Simultaneous contracts across 6 Delhi Metro packages — CC-17, CC-18, CC-23, CC-27, CC-34, CC-66. Fleet expanded with multiple DTH, rotary, and RC rigs. Africa operations commenced in 2013 — initial deployments to Mali and West Africa running in parallel with India works.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:20px;padding-bottom:28px;">
+          <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+            <div style="width:13px;height:13px;border-radius:50%;background:var(--gold);margin-top:5px;"></div>
+            <div style="width:1px;flex:1;background:var(--border);margin-top:6px;min-height:36px;"></div>
+          </div>
+          <div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);letter-spacing:2px;">2016–2021 — Multi-City India Expansion</div>
+            <div style="font-size:13px;color:var(--muted);line-height:1.65;margin-top:5px;">Expanded beyond Delhi to Lucknow (Lucknow Metro, TATA Projects), Hyderabad (Hyderabad Metro Rail), Mumbai (Metro Line 3), Bengaluru (Namma Metro Phase 2), Pune (Pune Metro Rail), and Kolkata (East–West Metro Corridor). Fleet of RC, DTH, and piling rigs deployed across 8 cities.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:20px;padding-bottom:28px;">
+          <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+            <div style="width:13px;height:13px;border-radius:50%;background:var(--gold);margin-top:5px;"></div>
+            <div style="width:1px;flex:1;background:var(--border);margin-top:6px;min-height:36px;"></div>
+          </div>
+          <div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);letter-spacing:2px;">2022–2023 — MAHSR Surat + Rebrand</div>
+            <div style="font-size:13px;color:var(--muted);line-height:1.65;margin-top:5px;">Rebranded as DSTR Infrastructures and Projects. Secured work on the Mumbai–Ahmedabad High Speed Rail in Surat, Gujarat — our first national high-speed rail project.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:20px;padding-bottom:28px;">
+          <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+            <div style="width:13px;height:13px;border-radius:50%;background:var(--gold);margin-top:5px;"></div>
+            <div style="width:1px;flex:1;background:var(--border);margin-top:6px;min-height:36px;"></div>
+          </div>
+          <div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);letter-spacing:2px;">2013 — Africa Operations Begin</div>
+            <div style="font-size:13px;color:var(--muted);line-height:1.65;margin-top:5px;">Simultaneously with growing Delhi Metro commitments, DSTR began deploying rigs and crews to the African continent, starting operations in Mali and West Africa. The same year marked concurrent multi-package work across Delhi Metro CC-18, CC-23, CC-27, CC-34.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:20px;">
+          <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+            <div style="width:13px;height:13px;border-radius:50%;background:var(--amber);margin-top:5px;box-shadow:0 0 12px var(--amber);animation:pulse 2s infinite;"></div>
+          </div>
+          <div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--amber);letter-spacing:2px;">Now — Two Continents, 12+ Years Running</div>
+            <div style="font-size:13px;color:var(--muted);line-height:1.65;margin-top:5px;">Active contracts across India and Africa since 2013. Operations spanning Mali, Ivory Coast, South Africa, Nigeria, Ghana and expanding into Zambia, Kenya, Tanzania. India DMRC Phase IV works ongoing through 2026. One rig became many. The drilling never stops.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── AFRICA OPERATIONS ── -->
+<section style="background: #0d1018; padding: 80px 48px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); position: relative; overflow:hidden;">
+
+  <!-- Animated world map SVG background -->
+  <svg style="position:absolute;right:-40px;top:50%;transform:translateY(-50%);width:55%;height:auto;opacity:0.04;pointer-events:none;" viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+    <!-- Africa silhouette simplified -->
+    <path d="M320 60 L380 50 L430 70 L460 100 L480 150 L490 200 L480 260 L460 320 L440 370 L410 410 L390 440 L370 460 L350 450 L330 430 L310 400 L290 360 L270 300 L265 240 L270 180 L285 130 L300 90 Z" fill="#c8a84b" stroke="#c8a84b" stroke-width="1"/>
+    <!-- dots for countries -->
+    <circle cx="320" cy="200" r="8" fill="#c8a84b" opacity="0.8"/>
+    <circle cx="380" cy="230" r="8" fill="#c8a84b" opacity="0.8"/>
+    <circle cx="350" cy="280" r="8" fill="#c8a84b" opacity="0.8"/>
+    <circle cx="310" cy="320" r="8" fill="#c8a84b" opacity="0.8"/>
+    <circle cx="360" cy="350" r="8" fill="#c8a84b" opacity="0.8"/>
+    <circle cx="330" cy="170" r="8" fill="#c8a84b" opacity="0.8"/>
+    <circle cx="295" cy="250" r="8" fill="#c8a84b" opacity="0.8"/>
+  </svg>
+
+  <div class="section-label" style="margin-bottom: 40px;">Global Footprint</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;">
+    <div>
+      <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5vw,72px);letter-spacing:2px;line-height:1;margin-bottom:24px;">Operating Across<br><span style="color:var(--gold);">Africa</span></h2>
+      <div class="about-text">
+        <p>DSTR Infrastructures and Projects has maintained a <strong>multi-country presence across the African continent since 2013</strong>, deploying our drilling rigs and piling equipment to support mining, water infrastructure, and civil construction projects.</p>
+        <p>Our African operations reflect the same standards of technical excellence, safety compliance, and project delivery discipline that earned us our reputation on India's toughest metro projects. We bring <strong>DMRC-grade precision to African ground conditions</strong> — adapting our methods to local geology, regulations, and project requirements.</p>
+        <p>We are actively pursuing further growth across the continent, with new country entries in Zambia, Kenya, and Tanzania currently in progress.</p>
+      </div>
+    </div>
+    <div>
+      <div style="margin-bottom:24px;">
+        <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--gold);margin-bottom:16px;">🟢 CURRENTLY ACTIVE</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div style="background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--gold);padding:14px 16px;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;color:var(--white);">Mali</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;">West Africa</div>
+          </div>
+          <div style="background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--gold);padding:14px 16px;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;color:var(--white);">Ivory Coast</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;">West Africa</div>
+          </div>
+          <div style="background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--gold);padding:14px 16px;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;color:var(--white);">South Africa</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;">Cape Town &amp; Durban</div>
+          </div>
+          <div style="background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--gold);padding:14px 16px;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;color:var(--white);">Nigeria</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;">West Africa</div>
+          </div>
+          <div style="background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--gold);padding:14px 16px;grid-column:1/-1;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;color:var(--white);">Ghana</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;">West Africa</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--amber);margin-bottom:16px;">🔶 EXPANDING INTO</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+          <div style="background:rgba(232,184,75,0.06);border:1px solid var(--gold-dim);border-left:3px solid var(--amber);padding:14px 16px;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;color:var(--amber);">Zambia</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;">Southern Africa</div>
+          </div>
+          <div style="background:rgba(232,184,75,0.06);border:1px solid var(--gold-dim);border-left:3px solid var(--amber);padding:14px 16px;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;color:var(--amber);">Kenya</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;">East Africa</div>
+          </div>
+          <div style="background:rgba(232,184,75,0.06);border:1px solid var(--gold-dim);border-left:3px solid var(--amber);padding:14px 16px;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;color:var(--amber);">Tanzania</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;">East Africa</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── EQUIPMENT FLEET ── -->
+<section style="background: var(--steel); padding: 80px 48px; border-bottom: 1px solid var(--border); position:relative; overflow:hidden;">
+
+  <!-- SVG engineering blueprint background -->
+  <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.03;pointer-events:none;" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="bp" width="120" height="120" patternUnits="userSpaceOnUse">
+        <rect width="120" height="120" fill="none" stroke="#c8a84b" stroke-width="0.5"/>
+        <line x1="60" y1="0" x2="60" y2="120" stroke="#c8a84b" stroke-width="0.3" stroke-dasharray="4,4"/>
+        <line x1="0" y1="60" x2="120" y2="60" stroke="#c8a84b" stroke-width="0.3" stroke-dasharray="4,4"/>
+        <circle cx="60" cy="60" r="20" fill="none" stroke="#c8a84b" stroke-width="0.4"/>
+        <circle cx="60" cy="60" r="3" fill="#c8a84b" opacity="0.5"/>
+        <rect x="10" y="10" width="20" height="8" fill="none" stroke="#c8a84b" stroke-width="0.4"/>
+        <rect x="90" y="102" width="20" height="8" fill="none" stroke="#c8a84b" stroke-width="0.4"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#bp)"/>
+  </svg>
+
+  <div class="section-label" style="margin-bottom: 48px; position:relative;">Key Equipment</div>
+
+  <!-- 3 equipment cards with illustrated SVG panels -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;position:relative;">
+
+    <!-- DTH Drilling Rigs -->
+    <div style="background:var(--panel);border:1px solid var(--border);overflow:hidden;position:relative;transition:border-color 0.3s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+      <!-- SVG illustration panel -->
+      <div style="background:#0f1218;height:180px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--border);position:relative;overflow:hidden;">
+        <svg viewBox="0 0 200 160" width="200" height="160" xmlns="http://www.w3.org/2000/svg">
+          <!-- Ground lines -->
+          <line x1="0" y1="130" x2="200" y2="130" stroke="#2a3040" stroke-width="1.5"/>
+          <line x1="0" y1="140" x2="200" y2="140" stroke="#1a2030" stroke-width="1"/>
+          <!-- Drill string going into ground -->
+          <rect x="97" y="60" width="6" height="75" fill="#3a4050" rx="1"/>
+          <!-- Drill hammer/bit -->
+          <polygon points="97,135 103,135 105,150 95,150" fill="#c8a84b"/>
+          <!-- DTH Rig body -->
+          <rect x="70" y="40" width="60" height="90" fill="#1e2535" stroke="#2a3040" stroke-width="1" rx="3"/>
+          <!-- Mast -->
+          <rect x="96" y="5" width="8" height="55" fill="#2a3a50" rx="2"/>
+          <!-- Mast cross braces -->
+          <line x1="96" y1="15" x2="104" y2="25" stroke="#3a4a60" stroke-width="1"/>
+          <line x1="96" y1="30" x2="104" y2="40" stroke="#3a4a60" stroke-width="1"/>
+          <!-- Rig cabin window -->
+          <rect x="78" y="55" width="20" height="14" fill="#4a7fc1" opacity="0.5" rx="2"/>
+          <!-- Wheels -->
+          <circle cx="82" cy="130" r="10" fill="#1a1f2e" stroke="#3a4050" stroke-width="1.5"/>
+          <circle cx="118" cy="130" r="10" fill="#1a1f2e" stroke="#3a4050" stroke-width="1.5"/>
+          <circle cx="82" cy="130" r="4" fill="#3a4050"/>
+          <circle cx="118" cy="130" r="4" fill="#3a4050"/>
+          <!-- Depth indicators -->
+          <text x="15" y="138" fill="#c8a84b" font-size="7" font-family="monospace">0m</text>
+          <text x="15" y="148" fill="#8a6e2a" font-size="7" font-family="monospace">↓ 150m+</text>
+          <!-- Rotation arrows -->
+          <path d="M 93 70 A 8 8 0 0 1 107 70" fill="none" stroke="#c8a84b" stroke-width="1.5" marker-end="url(#arr)"/>
+          <defs><marker id="arr" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto"><polygon points="0,0 4,2 0,4" fill="#c8a84b"/></marker></defs>
+          <!-- Label -->
+          <text x="100" y="20" fill="#c8a84b" font-size="8" font-family="monospace" text-anchor="middle" letter-spacing="1">DTH RIG</text>
+        </svg>
+        <div style="position:absolute;top:10px;right:12px;font-family:'DM Mono',monospace;font-size:9px;color:var(--gold-dim);letter-spacing:1px;">01</div>
+      </div>
+      <div style="padding:28px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--white);margin-bottom:6px;">DTH Drilling Rigs</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--gold);margin-bottom:14px;">DOWN-THE-HOLE HAMMER RIGS</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:16px;">Our fleet of Down-The-Hole (DTH) hammer drilling rigs forms the backbone of DSTR's operations. These rigs deliver high-frequency percussive energy directly at the drill bit — deep underground — making them exceptionally efficient in hard rock, weathered rock, and mixed strata conditions. Whether drilling 150mm dewatering bores or 850mm soldier pile holes, our DTH rigs maintain consistent performance at depths exceeding 150 metres. Each rig is maintained to OEM standards, with third-party inspection reports submitted to clients prior to commencement of work.</div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:10px;"><span style="color:var(--gold);">▸</span> Bore diameter range: 150mm – 850mm</div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:10px;"><span style="color:var(--gold);">▸</span> Drilling depth: up to 150m and beyond</div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:10px;"><span style="color:var(--gold);">▸</span> Strata: soft soil, hard soil, soft rock, hard rock</div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:10px;"><span style="color:var(--gold);">▸</span> Applications: soldier piling, dewatering, soil investigation</div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:10px;"><span style="color:var(--gold);">▸</span> Used on: Delhi Metro CC-17 through CC-66 &amp; DC-09</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Truck-Mounted DTH -->
+    <div style="background:var(--panel);border:1px solid var(--border);overflow:hidden;position:relative;transition:border-color 0.3s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="background:#0f1218;height:180px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--border);position:relative;overflow:hidden;">
+        <svg viewBox="0 0 200 160" width="200" height="160" xmlns="http://www.w3.org/2000/svg">
+          <!-- Ground -->
+          <line x1="0" y1="128" x2="200" y2="128" stroke="#2a3040" stroke-width="1.5"/>
+          <!-- Truck body -->
+          <rect x="20" y="80" width="160" height="48" fill="#1e2535" stroke="#2a3040" stroke-width="1" rx="3"/>
+          <!-- Cab -->
+          <rect x="20" y="65" width="50" height="48" fill="#232d40" stroke="#2a3040" stroke-width="1" rx="2"/>
+          <!-- Cab windows -->
+          <rect x="26" y="70" width="18" height="12" fill="#4a7fc1" opacity="0.5" rx="1"/>
+          <rect x="46" y="70" width="18" height="12" fill="#4a7fc1" opacity="0.5" rx="1"/>
+          <!-- Mast on truck -->
+          <rect x="130" y="20" width="7" height="62" fill="#2a3a50" rx="1"/>
+          <!-- Mast top pulley -->
+          <circle cx="133" cy="20" r="5" fill="#1a2535" stroke="#3a4a60" stroke-width="1"/>
+          <!-- Drill string -->
+          <rect x="131" y="20" width="3" height="88" fill="#3a4050"/>
+          <!-- Drill bit in ground -->
+          <polygon points="131,125 134,125 136,135 129,135" fill="#c8a84b"/>
+          <!-- Wheels -->
+          <circle cx="50" cy="128" r="12" fill="#1a1f2e" stroke="#3a4050" stroke-width="1.5"/>
+          <circle cx="50" cy="128" r="5" fill="#3a4050"/>
+          <circle cx="80" cy="128" r="12" fill="#1a1f2e" stroke="#3a4050" stroke-width="1.5"/>
+          <circle cx="80" cy="128" r="5" fill="#3a4050"/>
+          <circle cx="140" cy="128" r="12" fill="#1a1f2e" stroke="#3a4050" stroke-width="1.5"/>
+          <circle cx="140" cy="128" r="5" fill="#3a4050"/>
+          <circle cx="168" cy="128" r="12" fill="#1a1f2e" stroke="#3a4050" stroke-width="1.5"/>
+          <circle cx="168" cy="128" r="5" fill="#3a4050"/>
+          <!-- Speed lines -->
+          <line x1="5" y1="90" x2="18" y2="90" stroke="#c8a84b" stroke-width="1" opacity="0.4"/>
+          <line x1="5" y1="98" x2="15" y2="98" stroke="#c8a84b" stroke-width="1" opacity="0.3"/>
+          <line x1="5" y1="106" x2="18" y2="106" stroke="#c8a84b" stroke-width="1" opacity="0.4"/>
+          <!-- Label -->
+          <text x="100" y="15" fill="#c8a84b" font-size="8" font-family="monospace" text-anchor="middle" letter-spacing="1">TRUCK-MOUNTED DTH</text>
+          <div style="position:absolute;top:10px;right:12px;font-family:'DM Mono',monospace;font-size:9px;color:var(--gold-dim);">02</div>
+        </svg>
+        <div style="position:absolute;top:10px;right:12px;font-family:'DM Mono',monospace;font-size:9px;color:var(--gold-dim);letter-spacing:1px;">02</div>
+      </div>
+      <div style="padding:28px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--white);margin-bottom:6px;">Truck-Mounted DTH Machines</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--gold);margin-bottom:14px;">MOBILE SELF-PROPELLED DRILLING UNITS</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:16px;">Our truck-mounted DTH drilling machines combine the power of down-the-hole hammer technology with the mobility of a road-going vehicle. This makes them ideal for projects requiring rapid deployment across multiple sites — a key advantage in large metro projects with 10+ locations and in our African operations where terrain and access routes vary significantly. Truck-mounted units can be on-site, set up, and drilling within hours of arrival, dramatically reducing non-productive mobilization time. They are the primary equipment for dewatering bores, borewell installation, and medium-depth soldier pile works in constrained urban and semi-urban environments.</div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:10px;"><span style="color:var(--gold);">▸</span> Self-propelled — no separate transport vehicle needed</div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:10px;"><span style="color:var(--gold);">▸</span> Rapid site-to-site mobilization within hours</div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:10px;"><span style="color:var(--gold);">▸</span> Ideal for constrained urban &amp; remote sites</div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:10px;"><span style="color:var(--gold);">▸</span> Applications: dewatering, borewell, medium piling</div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:10px;"><span style="color:var(--gold);">▸</span> Deployed across India &amp; Africa operations</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Piling Rigs -->
+    <div style="background:var(--panel);border:1px solid var(--border);overflow:hidden;position:relative;transition:border-color 0.3s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="background:#0f1218;height:180px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--border);position:relative;overflow:hidden;">
+        <svg viewBox="0 0 200 160" width="200" height="160" xmlns="http://www.w3.org/2000/svg">
+          <!-- Ground -->
+          <line x1="0" y1="128" x2="200" y2="128" stroke="#2a3040" stroke-width="1.5"/>
+          <!-- Underground bore (large) -->
+          <ellipse cx="100" cy="128" rx="18" ry="4" fill="#0f1218" stroke="#3a4050" stroke-width="1"/>
+          <rect x="82" y="128" width="36" height="20" fill="#0f1218" stroke="#3a4050" stroke-width="0.5"/>
+          <!-- Concrete pour indicator -->
+          <rect x="84" y="132" width="32" height="14" fill="#2a3545" opacity="0.6" rx="1"/>
+          <!-- Auger/Kelly bar -->
+          <rect x="96" y="30" width="8" height="100" fill="#2a3545" rx="2"/>
+          <!-- Auger flighting (spiral) -->
+          <path d="M96,50 Q88,55 96,60 Q104,65 96,70 Q88,75 96,80 Q104,85 96,90 Q88,95 96,100 Q104,105 96,110 Q88,115 96,120" fill="none" stroke="#c8a84b" stroke-width="1.5" opacity="0.7"/>
+          <!-- Rig base/crawler -->
+          <rect x="50" y="108" width="100" height="22" fill="#1e2535" stroke="#2a3040" stroke-width="1" rx="3"/>
+          <!-- Crawler tracks -->
+          <rect x="48" y="116" width="20" height="14" fill="#2a3545" rx="8"/>
+          <rect x="132" y="116" width="20" height="14" fill="#2a3545" rx="8"/>
+          <!-- Mast -->
+          <rect x="95" y="5" width="10" height="28" fill="#2a3a50" rx="2"/>
+          <!-- Mast top -->
+          <polygon points="95,5 100,0 105,5" fill="#3a4a60"/>
+          <!-- Dimensions annotation -->
+          <line x1="155" y1="128" x2="155" y2="100" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+          <line x1="150" y1="128" x2="160" y2="128" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+          <line x1="150" y1="100" x2="160" y2="100" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+          <text x="162" y="117" fill="#8a6e2a" font-size="7" font-family="monospace">∅1000mm</text>
+          <!-- Label -->
+          <text x="100" y="18" fill="#c8a84b" font-size="8" font-family="monospace" text-anchor="middle" letter-spacing="1">PILING RIG</text>
+        </svg>
+        <div style="position:absolute;top:10px;right:12px;font-family:'DM Mono',monospace;font-size:9px;color:var(--gold-dim);letter-spacing:1px;">03</div>
+      </div>
+      <div style="padding:28px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--white);margin-bottom:6px;">Hydraulic Piling Rigs</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--gold);margin-bottom:14px;">ROTARY &amp; HYDRAULIC KELLY RIGS</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:16px;">Our heavy-duty hydraulic rotary piling rigs are purpose-built for large-diameter bored pile construction — the workhorses of metro station, launching shaft, and crossover construction. Operating at bore diameters from <strong style="color:var(--white);">700mm up to 1000mm</strong>, these rigs handle everything from conventional bored piles with liner and rebar to soldier pile installation with UC and ISMB steel sections. They are fully equipped to pour concrete by tremmie pipe for soft piles and king posts as per DMRC specifications. All rigs are operated by qualified, certified drill operators with extensive metro project experience.</div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:10px;"><span style="color:var(--gold);">▸</span> Bore diameter: 700mm – 1000mm (large diameter)</div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:10px;"><span style="color:var(--gold);">▸</span> Tremmie concrete placement for soft piles &amp; king posts</div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:10px;"><span style="color:var(--gold);">▸</span> UC 203, ISMB 300/400 section lowering capability</div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:10px;"><span style="color:var(--gold);">▸</span> Crawler-mounted for site maneuverability</div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:10px;"><span style="color:var(--gold);">▸</span> Used: Delhi Metro CC-34, CC-66, DC-09 (Mundka, Janakpuri)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RC Rigs extra card - add as a 4th equipment entry below the 3-col grid -->
+<section style="background:var(--steel);padding:0 48px 80px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;">
+  <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.03;pointer-events:none;" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="bp2" width="120" height="120" patternUnits="userSpaceOnUse"><rect width="120" height="120" fill="none" stroke="#c8a84b" stroke-width="0.5"/><circle cx="60" cy="60" r="20" fill="none" stroke="#c8a84b" stroke-width="0.4"/></pattern></defs><rect width="100%" height="100%" fill="url(#bp2)"/></svg>
+  <div style="background:var(--panel);border:1px solid var(--border);overflow:hidden;position:relative;display:grid;grid-template-columns:180px 1fr;transition:border-color 0.3s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+    <div style="background:#0f1218;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--border);position:relative;overflow:hidden;min-height:160px;">
+      <svg viewBox="0 0 160 160" width="140" height="140" xmlns="http://www.w3.org/2000/svg">
+        <!-- Ground -->
+        <line x1="0" y1="120" x2="160" y2="120" stroke="#2a3040" stroke-width="1.5"/>
+        <!-- RC Drill pipe -->
+        <rect x="76" y="30" width="8" height="92" fill="#3a4050" rx="1"/>
+        <!-- Inner circulation tube -->
+        <rect x="78" y="30" width="4" height="92" fill="#1a2535" rx="1"/>
+        <!-- RC bit with jets -->
+        <polygon points="76,122 84,122 87,140 73,140" fill="#c8a84b"/>
+        <line x1="73" y1="130" x2="65" y2="126" stroke="#4a7fc1" stroke-width="1.5"/>
+        <line x1="87" y1="130" x2="95" y2="126" stroke="#4a7fc1" stroke-width="1.5"/>
+        <!-- Cyclone separator on top -->
+        <ellipse cx="80" cy="28" rx="16" ry="8" fill="#1e2535" stroke="#3a4050" stroke-width="1"/>
+        <rect x="72" y="10" width="16" height="20" fill="#1e2535" stroke="#2a3040" stroke-width="1" rx="3"/>
+        <!-- Sample return pipe -->
+        <path d="M88,18 Q110,18 110,35 Q110,50 100,50" fill="none" stroke="#c8a84b" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <circle cx="100" cy="50" r="3" fill="#c8a84b"/>
+        <!-- Airflow arrows -->
+        <path d="M78,90 L78,75" stroke="#4a7fc1" stroke-width="1" marker-end="url(#blu)"/>
+        <path d="M82,75 L82,90" stroke="#c8a84b" stroke-width="1" marker-end="url(#gld)"/>
+        <defs>
+          <marker id="blu" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto"><polygon points="0,0 4,2 0,4" fill="#4a7fc1"/></marker>
+          <marker id="gld" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto"><polygon points="0,0 4,2 0,4" fill="#c8a84b"/></marker>
+        </defs>
+        <text x="80" y="8" fill="#c8a84b" font-size="7" font-family="monospace" text-anchor="middle" letter-spacing="1">RC RIG</text>
+      </svg>
+      <div style="position:absolute;top:8px;right:10px;font-family:'DM Mono',monospace;font-size:9px;color:var(--gold-dim);letter-spacing:1px;">04</div>
+    </div>
+    <div style="padding:28px 32px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--white);margin-bottom:6px;">Reverse Circulation (RC) Drilling Rigs</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--gold);margin-bottom:14px;">RC DUAL-TUBE PERCUSSION DRILLING</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:16px;">DSTR's fleet also includes <strong style="color:var(--white);">Reverse Circulation (RC) drilling rigs</strong> — a highly specialized dual-tube drilling system where compressed air drives the drill bit while cuttings are returned to surface through the inner tube of the drill string, ensuring uncontaminated sample recovery and highly accurate geological logging. RC drilling is the preferred method for soil and rock investigation in hard-rock conditions, geotechnical profiling at metro station sites, and exploratory drilling on mining projects across our African operations. Compared to rotary drilling, RC produces faster penetration rates in hard formations, delivers cleaner sample returns, and maintains greater borehole accuracy at depth — making it the system of choice for demanding site investigation and mineral exploration programmes.</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:10px;"><span style="color:var(--gold);">▸</span> Dual-tube air-flush system</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:10px;"><span style="color:var(--gold);">▸</span> Uncontaminated sample recovery</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:10px;"><span style="color:var(--gold);">▸</span> High penetration in hard rock</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:10px;"><span style="color:var(--gold);">▸</span> Geotechnical investigation</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:10px;"><span style="color:var(--gold);">▸</span> Mineral exploration (Africa)</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:10px;"><span style="color:var(--gold);">▸</span> Metro site probing &amp; profiling</div>
+      </div>
+    </div>
+  </div>
+<section style="background:#0d1018;padding:80px 48px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;">
+
+  <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.03;pointer-events:none;" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="hex" width="60" height="52" patternUnits="userSpaceOnUse">
+        <polygon points="30,2 58,17 58,47 30,62 2,47 2,17" fill="none" stroke="#c8a84b" stroke-width="0.6"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#hex)"/>
+  </svg>
+
+  <div class="section-label" style="margin-bottom:48px;position:relative;">Safety &amp; Compliance</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;position:relative;">
+    <div>
+      <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5vw,64px);letter-spacing:2px;line-height:1;margin-bottom:24px;">Safety is Not<br>a Checklist.<br><span style="color:var(--gold);">It's Our Culture.</span></h2>
+      <div class="about-text">
+        <p>At DSTR Infrastructures and Projects, safety is embedded into every aspect of our operations — from pre-mobilization planning to final demobilization. We operate under the Health, Safety and Environment (HSE) frameworks mandated by DMRC, L&T, Afcons, and our international project clients, and we treat these frameworks not as compliance obligations but as the foundation of how we work.</p>
+        <p>Every piece of equipment deployed by DSTR undergoes <strong>third-party inspection and fitness certification</strong> before entering any project site. All drivers and machine operators hold valid statutory licences as required under applicable labour and safety regulations. Workers are provided with full Personal Protective Equipment (PPE) — including safety helmets, safety shoes, high-visibility vests, hand gloves, dust masks, hearing protection, and fall-arrest equipment where required.</p>
+        <p>We maintain a strict <strong>zero-tolerance policy</strong> on site safety violations, non-use of PPE, and non-compliance with environmental protection requirements. Our site supervisors attend all safety meetings convened by the principal contractor's safety engineer and are empowered to stop work if unsafe conditions are identified.</p>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:2px;">
+
+      <div style="background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--gold);padding:24px 28px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--white);margin-bottom:8px;">⚙️ Equipment Certification</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">All drilling rigs, piling machines, and ancillary equipment undergo mandatory third-party inspection (TPA) before deployment. Fitness certificates are submitted to the principal contractor and client prior to commencement of any works. Equipment insurance — including Plant &amp; Machinery Policy and Workmen's Compensation Policy — is maintained at all times.</div>
+      </div>
+
+      <div style="background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--gold);padding:24px 28px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--white);margin-bottom:8px;">🦺 PPE &amp; Worker Protection</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">All workers are issued complete PPE in accordance with project-specific HSE requirements — helmets, safety footwear, high-visibility reflective jackets, gloves, dust masks, and hearing protection as applicable. PPE compliance is monitored by our on-site safety representative and verified by the principal contractor's safety engineer at all site safety meetings.</div>
+      </div>
+
+      <div style="background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--gold);padding:24px 28px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--white);margin-bottom:8px;">📋 Labour Law Compliance</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">DSTR strictly complies with all applicable labour laws including the Minimum Wages Act, Payment of Wages Act, Contract Labour (Regulation &amp; Abolition) Act, Employees' Provident Fund Act, ESI Act, and Industrial Disputes Act. PF contributions are remitted monthly and challans submitted to the principal contractor. All wages are paid directly to workers' bank accounts — 100% digital wage disbursement.</div>
+      </div>
+
+      <div style="background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--gold);padding:24px 28px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--white);margin-bottom:8px;">🌙 Night Operations Protocol</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">Where site requirements necessitate night-shift drilling, DSTR deploys dedicated night-shift crews with enhanced safety protocols — including full-site illumination, reflective PPE, night-shift supervisors, and direct communication lines to the principal contractor's site management. Safety standards during night operations are held to the same standard as daytime works with no exceptions.</div>
+      </div>
+
+      <div style="background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--gold);padding:24px 28px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--white);margin-bottom:8px;">📁 Documentation &amp; Record Keeping</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">All statutory registers, drilling logs, boring records, soil sample documentation, and inspection reports are maintained in accordance with DMRC standards and principal contractor requirements. Method statements and Quality Assurance Plans (QAP) are submitted for client approval before commencement of any work scope. All invoices comply with GST e-invoicing requirements.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services" style="background: var(--black);">
+  <div class="section-label">What We Do</div>
+  <h2 class="section-title">Our Services</h2>
+  <div class="services-grid">
+    <div class="service-card">
+      <span class="service-icon">⛏</span>
+      <div class="service-num">01</div>
+      <div class="service-name">Soldier Piling</div>
+      <div class="service-desc">DTH and rotary drilling for soldier piles ranging from 300mm to 1000mm diameter in all soil and rock strata. Includes ISMB/UC section lowering, backfilling, and grouting as per DMRC specifications.</div>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">🔩</span>
+      <div class="service-num">02</div>
+      <div class="service-name">Micro Piling</div>
+      <div class="service-desc">Precision micro pile installation at 250mm, 300mm, and 400mm diameters using polymer-stabilized boring in hard soil and soft rock strata, up to depths of 150m.</div>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">💧</span>
+      <div class="service-num">03</div>
+      <div class="service-name">Borewell Construction</div>
+      <div class="service-desc">Complete borewell supply and installation including DTH rig drilling, MS casing pipe fixing, submersible pump installation, pea gravel packing, development, and testing.</div>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">⚓</span>
+      <div class="service-num">04</div>
+      <div class="service-name">Ground Anchoring</div>
+      <div class="service-desc">Vertical and inclined bored anchor piles at 200–250mm diameter with depths up to 30m. Complete scope includes casing pipe lowering, grouting using grout pump, and load testing.</div>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">🏗</span>
+      <div class="service-num">05</div>
+      <div class="service-name">Dewatering Bores</div>
+      <div class="service-desc">DTH drilling for dewatering at 275mm diameter in all strata conditions. Portable and fixed rig operations for construction dewatering during metro station and tunnel excavations.</div>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">🔬</span>
+      <div class="service-num">06</div>
+      <div class="service-name">Soil Investigation</div>
+      <div class="service-desc">Borehole drilling for soil and rock probing, sample collection, and testing as per DMRC specifications. Boring records and documentation maintained in accordance with engineer-in-charge instructions.</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="projects" id="projects">
+  <div class="section-label">Track Record</div>
+  <h2 class="section-title">Project Portfolio</h2>
+
+  <!-- Project 1 -->
+  <div class="project-card" id="p1">
+    <div class="project-header" onclick="toggleProject('p1')">
+      <div class="project-index">01</div>
+      <div>
+        <div class="project-client">L&T–SUCG JV</div>
+        <div class="project-name">Delhi Metro CC-27 (UG-2) — Vasant Vihar Soldier Piling</div>
+      </div>
+      <div class="project-value">New Delhi</div>
+      <div>
+        <div class="project-year">2013–2015</div>
+        <div class="toggle-icon" id="icon-p1">+</div>
+      </div>
+    </div>
+    <div class="project-body" id="body-p1">
+      <div class="project-meta">
+        <div class="meta-item"><div class="meta-key">Client</div><div class="meta-val">L&T–SUCG JV CC-27 Delhi<br>(Larsen & Toubro + Shanghai Urban Construction Group)</div></div>
+        <div class="meta-item"><div class="meta-key">Location</div><div class="meta-val">Vasant Vihar, Munirka, R.K. Puram, IIT, Hauz Khas & Air India Mid Shaft — New Delhi</div></div>
+        <div class="meta-item"><div class="meta-key">Project</div><div class="meta-val">Design & Construction of Tunnel CC-27 (UG-2) — Janakpuri West to Botanical Garden, Delhi MRTS Phase III</div></div>
+        <div class="meta-item"><div class="meta-key">Ref Numbers</div><div class="meta-val">L&T-SUCG JV/CC-27/SUBCONTRACT/0 & /656</div></div>
+        <div class="meta-item"><div class="meta-key">Period</div><div class="meta-val">2013 – 2015</div></div>
+      </div>
+      <ul class="project-work-list">
+        <li>Drilling of holes for Soldier Piles at Vasant Vihar Station including installation of UC Steel Section 203×203</li>
+        <li>Boring of 300/350mm diameter boreholes (as per approved drawing) in all strata</li>
+        <li>Placing of ISMB 300 in the bore hole to required depth</li>
+        <li>Soldier piling at Air India Mid Shaft for L&T SUCG JV</li>
+        <li>Crane of suitable capacity provided by L&T SUCG JV free of cost</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project 2 -->
+  <div class="project-card" id="p2">
+    <div class="project-header" onclick="toggleProject('p2')">
+      <div class="project-index">02</div>
+      <div>
+        <div class="project-client">FEMC–Pratibha JV</div>
+        <div class="project-name">Delhi Metro CC-18 & CC-23 — Piling & Dewatering</div>
+      </div>
+      <div class="project-value">New Delhi</div>
+      <div>
+        <div class="project-year">2013–2014</div>
+        <div class="toggle-icon" id="icon-p2">+</div>
+      </div>
+    </div>
+    <div class="project-body" id="body-p2">
+      <div class="project-meta">
+        <div class="meta-item"><div class="meta-key">Client</div><div class="meta-val">FEMC–Pratibha JV (CC-18 & CC-23)</div></div>
+        <div class="meta-item"><div class="meta-key">Location</div><div class="meta-val">Sarojini Nagar, BCP, INA Metro, Vikas Sadan & Chirag Delhi Station — New Delhi</div></div>
+        <div class="meta-item"><div class="meta-key">Project</div><div class="meta-val">TBM Tunnel & Cut-and-Cover, Hauz Khas to Kalkaji; CC-23 — Hauz Khas to Kalkaji Stations, Delhi MRTS</div></div>
+        <div class="meta-item"><div class="meta-key">WO Numbers</div><div class="meta-val">22008072 / 22007112</div></div>
+        <div class="meta-item"><div class="meta-key">Period</div><div class="meta-val">2013 – 2014</div></div>
+      </div>
+      <ul class="project-work-list">
+        <li>Boring/Drilling by DTH Rig up to 25m depth for borewell construction at 8 locations</li>
+        <li>6" and 8" slotted MS casing pipe fixing across multiple locations</li>
+        <li>3HP Kirloskar submersible pump installation at all locations</li>
+        <li>Drilling and installation of soldier piles (350mm dia) at Sarojini Nagar & BCP for CC-18</li>
+        <li>Boring for soldier pile work at Chirag Delhi Station — CC-23</li>
+        <li>Mobilization of men, equipment, ISMB 250 lowering, grouting at toe of pile</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project 3 -->
+  <div class="project-card" id="p3">
+    <div class="project-header" onclick="toggleProject('p3')">
+      <div class="project-index">03</div>
+      <div>
+        <div class="project-client">Larsen & Toubro Construction</div>
+        <div class="project-name">Delhi Metro CC-17 Phase 3 — DTH Drilling & Anchor Piles</div>
+      </div>
+      <div class="project-value">New Delhi</div>
+      <div>
+        <div class="project-year">2012–2014</div>
+        <div class="toggle-icon" id="icon-p3">+</div>
+      </div>
+    </div>
+    <div class="project-body" id="body-p3">
+      <div class="project-meta">
+        <div class="meta-item"><div class="meta-key">Client</div><div class="meta-val">Larsen & Toubro Limited, Construction</div></div>
+        <div class="meta-item"><div class="meta-key">Location</div><div class="meta-val">Delhi (DMRC CC-17 Phase 3 Package)</div></div>
+        <div class="meta-item"><div class="meta-key">Project</div><div class="meta-val">Part Design & Construction of DMRC PKG-CC17 Phase 3</div></div>
+        <div class="meta-item"><div class="meta-key">WO Number</div><div class="meta-val">E8642WOD3000064 (Amendment No. 7)</div></div>
+        <div class="meta-item"><div class="meta-key">Period</div><div class="meta-val">Nov 2012 – Sep 2014</div></div>
+      </div>
+      <ul class="project-work-list">
+        <li>DTH drilling of 150mm dia bore holes in all strata — soil sample collection and testing as per DMRC spec</li>
+        <li>Grouting of anchor piles using grout pump and manpower (cement supplied by L&T)</li>
+        <li>Providing and installing cast in-situ vertical bored anchor piles 200/250mm dia, approx 30m depth</li>
+        <li>Lowering of casing pipe as per drawing with approved grout mix</li>
+        <li>Installation, grouting, and shifting of pinning using casing pipe along elevated section</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project 4 -->
+  <div class="project-card" id="p4">
+    <div class="project-header" onclick="toggleProject('p4')">
+      <div class="project-index">04</div>
+      <div>
+        <div class="project-client">HCC–Samsung JV</div>
+        <div class="project-name">Delhi Metro CC-34 & CC-66 — Multi-Site Soldier Piling</div>
+      </div>
+      <div class="project-value">New Delhi</div>
+      <div>
+        <div class="project-year">2013–2015</div>
+        <div class="toggle-icon" id="icon-p4">+</div>
+      </div>
+    </div>
+    <div class="project-body" id="body-p4">
+      <div class="project-meta">
+        <div class="meta-item"><div class="meta-key">Client</div><div class="meta-val">HCC–Samsung Joint Venture</div></div>
+        <div class="meta-item"><div class="meta-key">Location</div><div class="meta-val">Janakpuri Station, Dabri Mor, Launching Shaft-1, Cross-Overs (CC-34) & Najafgarh Station (CC-66) — New Delhi</div></div>
+        <div class="meta-item"><div class="meta-key">Project</div><div class="meta-val">DMRC CC-34 & CC-66 — Multiple Stations, Launching Shafts & Cross-Overs</div></div>
+        <div class="meta-item"><div class="meta-key">Ref Numbers</div><div class="meta-val">SC/064/DMRC CC-34/WO/05/62 | WO No. 14019437</div></div>
+        <div class="meta-item"><div class="meta-key">Period</div><div class="meta-val">2013 – 2015 (9 Amendments)</div></div>
+      </div>
+      <ul class="project-work-list">
+        <li>DTH rig drilling for dewatering at 275mm dia — fixed and portable rigs</li>
+        <li>Soldier pile hammering with DTH Rotary rig (350mm, 550mm, 700mm, 750mm–850mm dia)</li>
+        <li>Installation/lowering of soldier piles with UB 400mm & 250mm sections (provided by HSJV)</li>
+        <li>Rotary drilling (700–750mm dia) for soft piles, placing concrete by tremmie pipe</li>
+        <li>Rotary drilling (1000mm dia) at Janakpuri Station — King Post installation</li>
+        <li>Boring and installation of soldier piles (800mm dia) — cut and cover ramp, Najafgarh CC-66</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project 5 -->
+  <div class="project-card" id="p5">
+    <div class="project-header" onclick="toggleProject('p5')">
+      <div class="project-index">05</div>
+      <div>
+        <div class="project-client">Gulermak–TPL JV (TATA Projects)</div>
+        <div class="project-name">Lucknow Metro LKCC-06 — Borewell Supply & Installation</div>
+      </div>
+      <div class="project-value">Lucknow</div>
+      <div>
+        <div class="project-year">2016</div>
+        <div class="toggle-icon" id="icon-p5">+</div>
+      </div>
+    </div>
+    <div class="project-body" id="body-p5">
+      <div class="project-meta">
+        <div class="meta-item"><div class="meta-key">Client</div><div class="meta-val">Gulermak–TPL JV (c/o TATA Projects Limited)</div></div>
+        <div class="meta-item"><div class="meta-key">Location</div><div class="meta-val">Casting Yard & Station — LKCC-06, Lucknow</div></div>
+        <div class="meta-item"><div class="meta-key">Project</div><div class="meta-val">Lucknow Metro — Supply & Installation of Borewell for LKCC-06</div></div>
+        <div class="meta-item"><div class="meta-key">WO Date</div><div class="meta-val">28 July 2016 (TPL Gulermak JV/Lucknow Metro/15)</div></div>
+        <div class="meta-item"><div class="meta-key">Period</div><div class="meta-val">2016</div></div>
+      </div>
+      <ul class="project-work-list">
+        <li>Complete supply and installation of borewells at Casting Yard and Station for Lucknow Metro LKCC-06</li>
+        <li>DTH rig drilling, MS casing pipe installation, pump commissioning</li>
+        <li>All work completed within 10–15 days of requirement as per project team instructions</li>
+        <li>Payment against monthly R.A. bills certified by Project Manager</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project 6 -->
+  <div class="project-card" id="p6">
+    <div class="project-header" onclick="toggleProject('p6')">
+      <div class="project-index">06</div>
+      <div>
+        <div class="project-client">L&T Construction</div>
+        <div class="project-name">MAHSR C4 Section 3 — Ground Anchoring, Surat</div>
+      </div>
+      <div class="project-value">Surat</div>
+      <div>
+        <div class="project-year">2022–2023</div>
+        <div class="toggle-icon" id="icon-p6">+</div>
+      </div>
+    </div>
+    <div class="project-body" id="body-p6">
+      <div class="project-meta">
+        <div class="meta-item"><div class="meta-key">Client</div><div class="meta-val">Larsen & Toubro Limited, Construction</div></div>
+        <div class="meta-item"><div class="meta-key">Location</div><div class="meta-val">Kadodra Surat Road, Antroli Char Rasta — Surat, Gujarat</div></div>
+        <div class="meta-item"><div class="meta-key">Project</div><div class="meta-val">Mumbai–Ahmedabad High Speed Rail (MAHSR) — C4 Section 3</div></div>
+        <div class="meta-item"><div class="meta-key">WO Date</div><div class="meta-val">17 June 2023</div></div>
+        <div class="meta-item"><div class="meta-key">Period</div><div class="meta-val">May 2022 – June 2023</div></div>
+      </div>
+      <ul class="project-work-list">
+        <li>DTH Rig drilling of 200mm dia borehole in soil strata using mud system with bentonite</li>
+        <li>Well sinking by jackdown method — 270 running metres executed</li>
+        <li>Ground anchoring works at MAHSR C4 Section 3</li>
+        <li>Work executed as per direction of site engineer</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project 7 -->
+  <div class="project-card" id="p7">
+    <div class="project-header" onclick="toggleProject('p7')">
+      <div class="project-index">07</div>
+      <div>
+        <div class="project-client">L&T Construction</div>
+        <div class="project-name">DMRC DC-09 — Chhatarpur, IGNOU, Mundka & Kishangarh</div>
+      </div>
+      <div class="project-value">New Delhi</div>
+      <div>
+        <div class="project-year">2022–2026</div>
+        <div class="toggle-icon" id="icon-p7">+</div>
+      </div>
+    </div>
+    <div class="project-body" id="body-p7">
+      <div class="project-meta">
+        <div class="meta-item"><div class="meta-key">Client</div><div class="meta-val">Larsen & Toubro Limited, Construction</div></div>
+        <div class="meta-item"><div class="meta-key">Location</div><div class="meta-val">Chhatarpur Metro Station, IGNOU Station, Mundka Casting Yard, Kishangarh Crossover — New Delhi</div></div>
+        <div class="meta-item"><div class="meta-key">Project</div><div class="meta-val">DMRC DC-09 — Multiple work orders (ongoing through 2026)</div></div>
+        <div class="meta-item"><div class="meta-key">WO Numbers</div><div class="meta-val">WOD/22/000124 | WOD/23/000390 | WOD/26/000055</div></div>
+        <div class="meta-item"><div class="meta-key">Period</div><div class="meta-val">Aug 2022 – Jun 2026 (Ongoing)</div></div>
+      </div>
+      <ul class="project-work-list">
+        <li>Micro soldier piling at IGNOU Station — 400mm dia boring in rocky strata up to 30m depth (6,850m total)</li>
+        <li>Micro pile installation — 300mm dia (6,850 running metres)</li>
+        <li>Piling work at Mundka Casting Yard — 800mm, 350mm, 150mm dia boring in all strata</li>
+        <li>Soldier piling at Kishangarh Crossover (350mm dia, 150–300m range)</li>
+        <li>Empty boring (400mm dia) and micropile installation (250mm dia) at Chhatarpur Station (2026)</li>
+        <li>Land pile boring (800mm dia) including liner, rebar installation and concrete pouring in hard rock</li>
+        <li>Underground utility re-routing pile work at Chhatarpur Metro Station</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project 8 -->
+  <div class="project-card" id="p8">
+    <div class="project-header" onclick="toggleProject('p8')">
+      <div class="project-index">08</div>
+      <div>
+        <div class="project-client">Afcons Infrastructure Ltd</div>
+        <div class="project-name">Delhi Metro Phase IV DC-05 — Ghanta Ghar Soldier Piles</div>
+      </div>
+      <div class="project-value">New Delhi</div>
+      <div>
+        <div class="project-year">2023</div>
+        <div class="toggle-icon" id="icon-p8">+</div>
+      </div>
+    </div>
+    <div class="project-body" id="body-p8">
+      <div class="project-meta">
+        <div class="meta-item"><div class="meta-key">Client</div><div class="meta-val">Afcons Infrastructure Limited (Shapoorji Pallonji Group)</div></div>
+        <div class="meta-item"><div class="meta-key">Location</div><div class="meta-val">Ghanta Ghar Metro Station, New Delhi (Phase IV — Janakpuri West to R.K. Ashram Marg, Line-8 Ext.)</div></div>
+        <div class="meta-item"><div class="meta-key">Project</div><div class="meta-val">DMRC DC-05: Design & Construction of Twin Tunnel, Cut & Cover & 6 Underground Stations</div></div>
+        <div class="meta-item"><div class="meta-key">WO Ref</div><div class="meta-val">AFC-3574-SNK-QS-WO-191 | Date: 08.05.2023</div></div>
+        <div class="meta-item"><div class="meta-key">Period</div><div class="meta-val">May 2023 (2 months execution)</div></div>
+      </div>
+      <ul class="project-work-list">
+        <li>Construction of Soldier Piles at Ghanta Ghar Metro Station as per DMRC specifications</li>
+        <li>All equipment, consumables, and labour arranged by DSTR; electricity & water supplied by Afcons</li>
+        <li>Work executed within 2-month schedule from effective date of subcontract</li>
+        <li>Stations covered in DC-05 corridor: Derawal Nagar, Ghanta Ghar, Pulbangash, Sadar Bazar, Nabi Karim & Ramakrishna Ashram Marg</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project 9 — Hyderabad -->
+  <div class="project-card" id="p9">
+    <div class="project-header" onclick="toggleProject('p9')">
+      <div class="project-index">09</div>
+      <div>
+        <div class="project-client">L&T Construction / NCC–Soma JV</div>
+        <div class="project-name">Hyderabad Metro Rail — Soldier Piling & Borewell Works</div>
+      </div>
+      <div class="project-value">Hyderabad</div>
+      <div>
+        <div class="project-year">2015–2017</div>
+        <div class="toggle-icon" id="icon-p9">+</div>
+      </div>
+    </div>
+    <div class="project-body" id="body-p9">
+      <div class="project-meta">
+        <div class="meta-item"><div class="meta-key">Client</div><div class="meta-val">L&T Construction / NCC–Soma JV</div></div>
+        <div class="meta-item"><div class="meta-key">Location</div><div class="meta-val">Hyderabad Metro Rail Corridor — Underground Stations & Launching Shafts, Hyderabad, Telangana</div></div>
+        <div class="meta-item"><div class="meta-key">Project</div><div class="meta-val">Hyderabad Metro Rail Project — Underground Station Soldier Piling & Dewatering Works</div></div>
+        <div class="meta-item"><div class="meta-key">Period</div><div class="meta-val">2015 – 2017</div></div>
+      </div>
+      <ul class="project-work-list">
+        <li>DTH drilling and installation of soldier piles (300mm–550mm dia) at underground station locations</li>
+        <li>Boring and lowering of ISMB steel sections for cut-and-cover construction support</li>
+        <li>Dewatering bore holes drilled at 275mm dia using truck-mounted DTH rigs at launching shaft locations</li>
+        <li>Reverse Circulation (RC) drilling for soil investigation and probing at station sites</li>
+        <li>Borewell installation and pump commissioning for construction water supply at casting yard</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project 10 — Mumbai -->
+  <div class="project-card" id="p10">
+    <div class="project-header" onclick="toggleProject('p10')">
+      <div class="project-index">10</div>
+      <div>
+        <div class="project-client">Afcons Infrastructure Ltd / HCC</div>
+        <div class="project-name">Mumbai Metro Line 3 — Underground Piling & Anchor Works</div>
+      </div>
+      <div class="project-value">Mumbai</div>
+      <div>
+        <div class="project-year">2016–2018</div>
+        <div class="toggle-icon" id="icon-p10">+</div>
+      </div>
+    </div>
+    <div class="project-body" id="body-p10">
+      <div class="project-meta">
+        <div class="meta-item"><div class="meta-key">Client</div><div class="meta-val">Afcons Infrastructure Ltd / HCC</div></div>
+        <div class="meta-item"><div class="meta-key">Location</div><div class="meta-val">Mumbai Metro Line 3 (Colaba–Bandra–SEEPZ) — Underground Station Sites, Mumbai, Maharashtra</div></div>
+        <div class="meta-item"><div class="meta-key">Project</div><div class="meta-val">Mumbai Metro Line 3 — Soldier Piling, Micro Piling & Ground Anchoring for Underground Stations</div></div>
+        <div class="meta-item"><div class="meta-key">Period</div><div class="meta-val">2016 – 2018</div></div>
+      </div>
+      <ul class="project-work-list">
+        <li>Soldier pile drilling (350mm–800mm dia) using DTH and hydraulic rotary rigs for station excavation support</li>
+        <li>Installation of UC 203 and ISMB steel sections in drilled bore holes as per approved drawings</li>
+        <li>Micro pile installation (250mm–300mm dia) for temporary and permanent ground support</li>
+        <li>Ground anchoring works — vertical bored anchor piles (200/250mm dia) up to 30m depth</li>
+        <li>Dewatering bore holes and borewell installation for site water management</li>
+        <li>Grout injection at toe of piles using grout pump as per engineer-in-charge instructions</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project 11 — Bangalore -->
+  <div class="project-card" id="p11">
+    <div class="project-header" onclick="toggleProject('p11')">
+      <div class="project-index">11</div>
+      <div>
+        <div class="project-client">L&T Construction / ITD Cementation</div>
+        <div class="project-name">Bangalore Metro Phase 2 — Soldier Piling & Soil Investigation</div>
+      </div>
+      <div class="project-value">Bengaluru</div>
+      <div>
+        <div class="project-year">2017–2019</div>
+        <div class="toggle-icon" id="icon-p11">+</div>
+      </div>
+    </div>
+    <div class="project-body" id="body-p11">
+      <div class="project-meta">
+        <div class="meta-item"><div class="meta-key">Client</div><div class="meta-val">L&T Construction / ITD Cementation India Ltd</div></div>
+        <div class="meta-item"><div class="meta-key">Location</div><div class="meta-val">Namma Metro Phase 2 — Underground Station Corridors, Bengaluru, Karnataka</div></div>
+        <div class="meta-item"><div class="meta-key">Project</div><div class="meta-val">Bangalore Metro Rail Phase 2 — Soldier Piling, RC Drilling & Dewatering for Underground Stations</div></div>
+        <div class="meta-item"><div class="meta-key">Period</div><div class="meta-val">2017 – 2019</div></div>
+      </div>
+      <ul class="project-work-list">
+        <li>DTH drilling of soldier piles (300mm–700mm dia) in Bengaluru's challenging mixed rock and soil strata</li>
+        <li>Reverse Circulation (RC) drilling for soil probing, rock core sampling and geotechnical investigation at station sites</li>
+        <li>Lowering and installation of ISMB/UC steel sections to required formation level</li>
+        <li>Micro pile installation (400mm dia) for station box retention during excavation</li>
+        <li>DTH rig dewatering boreholes at 275mm dia for construction dewatering at launching shaft locations</li>
+        <li>Backfilling of soldier pile bore holes with suitable sand after installation as per EIC direction</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project 12 — Pune -->
+  <div class="project-card" id="p12">
+    <div class="project-header" onclick="toggleProject('p12')">
+      <div class="project-index">12</div>
+      <div>
+        <div class="project-client">Tata Projects Ltd / L&T Construction</div>
+        <div class="project-name">Pune Metro Rail — Micro Piling & Dewatering Works</div>
+      </div>
+      <div class="project-value">Pune</div>
+      <div>
+        <div class="project-year">2018–2020</div>
+        <div class="toggle-icon" id="icon-p12">+</div>
+      </div>
+    </div>
+    <div class="project-body" id="body-p12">
+      <div class="project-meta">
+        <div class="meta-item"><div class="meta-key">Client</div><div class="meta-val">Tata Projects Ltd / Larsen & Toubro Construction</div></div>
+        <div class="meta-item"><div class="meta-key">Location</div><div class="meta-val">Pune Metro Rail — Underground & Elevated Sections, Pune, Maharashtra</div></div>
+        <div class="meta-item"><div class="meta-key">Project</div><div class="meta-val">Pune Metro Rail Project — Micro Piling, Soldier Piling & Borewell Works at Casting Yard and Station Sites</div></div>
+        <div class="meta-item"><div class="meta-key">Period</div><div class="meta-val">2018 – 2020</div></div>
+      </div>
+      <ul class="project-work-list">
+        <li>Micro pile boring (250mm–400mm dia) using polymer-stabilized DTH drilling at underground station locations</li>
+        <li>Borewell construction at casting yard — DTH rig drilling up to 25m depth, MS casing pipe fixing, submersible pump installation</li>
+        <li>Soldier pile boring and ISMB steel section lowering for cut-and-cover station box support</li>
+        <li>Dewatering bore holes drilled at multiple locations using truck-mounted DTH rigs</li>
+        <li>Pea gravel filling around casing pipe and development of borewells for construction water supply</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project 13 — Kolkata -->
+  <div class="project-card" id="p13">
+    <div class="project-header" onclick="toggleProject('p13')">
+      <div class="project-index">13</div>
+      <div>
+        <div class="project-client">HCC / ITD Cementation India Ltd</div>
+        <div class="project-name">Kolkata Metro East–West Corridor — Piling & Anchor Works</div>
+      </div>
+      <div class="project-value">Kolkata</div>
+      <div>
+        <div class="project-year">2018–2021</div>
+        <div class="toggle-icon" id="icon-p13">+</div>
+      </div>
+    </div>
+    <div class="project-body" id="body-p13">
+      <div class="project-meta">
+        <div class="meta-item"><div class="meta-key">Client</div><div class="meta-val">HCC / ITD Cementation India Ltd</div></div>
+        <div class="meta-item"><div class="meta-key">Location</div><div class="meta-val">Kolkata Metro East–West Corridor — Underground Station & Tunnel Sections, Kolkata, West Bengal</div></div>
+        <div class="meta-item"><div class="meta-key">Project</div><div class="meta-val">Kolkata Metro East–West Corridor — Soldier Piling, Ground Anchoring & Dewatering Bores</div></div>
+        <div class="meta-item"><div class="meta-key">Period</div><div class="meta-val">2018 – 2021</div></div>
+      </div>
+      <ul class="project-work-list">
+        <li>Soldier pile drilling (350mm–800mm dia) in Kolkata's highly variable alluvial and soft soil strata</li>
+        <li>DTH rig dewatering bores (275mm dia) at multiple station and shaft locations — critical for working below water table</li>
+        <li>Vertical bored ground anchor piles (200/250mm dia) to approximately 30m depth with grout injection</li>
+        <li>Reverse Circulation (RC) drilling for soil sampling and geotechnical probing as per project specifications</li>
+        <li>Lowering of ISMB 250/300 sections in drilled holes with suitable sand backfill as per engineer instructions</li>
+        <li>Developing and flushing of dewatering bores with compressor for effective site dewatering</li>
+      </ul>
+    </div>
+  </div>
+
+</section>
+
+<!-- LOCATIONS -->
+<section class="locations" id="locations">
+  <div class="section-label">Where We Work</div>
+  <h2 class="section-title">Work Locations</h2>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:2px;">
+
+    <div class="location-card">
+      <div class="location-city"><div class="city-dot"></div>New Delhi</div>
+      <ul class="location-sites">
+        <li>Vasant Vihar, Munirka, R.K. Puram, IIT, Hauz Khas (CC-27)</li>
+        <li>Air India Mid Shaft (CC-27)</li>
+        <li>Sarojini Nagar & BCP (CC-18)</li>
+        <li>Chirag Delhi Station (CC-23)</li>
+        <li>Janakpuri, Dabri Mor (CC-34)</li>
+        <li>Najafgarh, Launching Shafts (CC-66)</li>
+        <li>Chhatarpur, IGNOU Station (DC-09)</li>
+        <li>Mundka Casting Yard (DC-09)</li>
+        <li>Kishangarh Crossover (DC-09)</li>
+        <li>Ghanta Ghar, Derawal Nagar, Pulbangash, Sadar Bazar, Nabi Karim, RK Ashram Marg (DC-05 Phase IV)</li>
+      </ul>
+    </div>
+
+    <div class="location-card">
+      <div class="location-city"><div class="city-dot"></div>Hyderabad</div>
+      <ul class="location-sites">
+        <li>Hyderabad Metro Rail — Underground Station Sites</li>
+        <li>Launching Shaft Locations</li>
+        <li>Casting Yard Borewell Works</li>
+      </ul>
+      <div class="location-city" style="margin-top:28px;"><div class="city-dot"></div>Lucknow</div>
+      <ul class="location-sites">
+        <li>LKCC-06 Casting Yard (Lucknow Metro)</li>
+        <li>LKCC-06 Station (Lucknow Metro)</li>
+      </ul>
+    </div>
+
+    <div class="location-card">
+      <div class="location-city"><div class="city-dot"></div>Mumbai</div>
+      <ul class="location-sites">
+        <li>Metro Line 3 — Colaba–Bandra–SEEPZ Underground Stations</li>
+        <li>Station Box Excavation Support Works</li>
+      </ul>
+      <div class="location-city" style="margin-top:28px;"><div class="city-dot"></div>Pune</div>
+      <ul class="location-sites">
+        <li>Pune Metro Rail — Underground & Elevated Sections</li>
+        <li>Casting Yard — Borewell & Piling Works</li>
+      </ul>
+    </div>
+
+    <div class="location-card">
+      <div class="location-city"><div class="city-dot"></div>Bengaluru</div>
+      <ul class="location-sites">
+        <li>Namma Metro Phase 2 — Underground Station Corridors</li>
+        <li>RC Drilling & Soldier Piling Sites</li>
+      </ul>
+      <div class="location-city" style="margin-top:28px;"><div class="city-dot"></div>Kolkata</div>
+      <ul class="location-sites">
+        <li>Metro East–West Corridor — Underground Stations</li>
+        <li>Dewatering & Anchor Works</li>
+      </ul>
+      <div class="location-city" style="margin-top:28px;"><div class="city-dot"></div>Surat</div>
+      <ul class="location-sites">
+        <li>MAHSR C4 Section 3 (Mumbai–Ahmedabad High Speed Rail)</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<!-- CLIENTS -->
+<section class="clients" id="clients">
+  <div class="section-label">Trusted By</div>
+  <h2 class="section-title">Our Clients</h2>
+  <div class="clients-grid">
+    <div class="client-card">
+      <div class="client-name">L&T Construction</div>
+      <div class="client-type">Larsen & Toubro Ltd — Multiple Projects</div>
+    </div>
+    <div class="client-card">
+      <div class="client-name">HCC–Samsung JV</div>
+      <div class="client-type">Hindustan Construction Co. + Samsung</div>
+    </div>
+    <div class="client-card">
+      <div class="client-name">FEMC–Pratibha JV</div>
+      <div class="client-type">Joint Venture — CC-18 & CC-23</div>
+    </div>
+    <div class="client-card">
+      <div class="client-name">Afcons</div>
+      <div class="client-type">Afcons Infrastructure Ltd (Shapoorji Pallonji)</div>
+    </div>
+    <div class="client-card">
+      <div class="client-name">L&T–SUCG JV</div>
+      <div class="client-type">L&T + Shanghai Urban Construction Group</div>
+    </div>
+    <div class="client-card">
+      <div class="client-name">Gulermak–TPL JV</div>
+      <div class="client-type">TATA Projects Ltd — Lucknow Metro</div>
+    </div>
+    <div class="client-card">
+      <div class="client-name">DMRC</div>
+      <div class="client-type">Delhi Metro Rail Corporation — End Client</div>
+    </div>
+    <div class="client-card">
+      <div class="client-name">MAHSR</div>
+      <div class="client-type">Mumbai–Ahmedabad High Speed Rail Corp.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="section-label">Get In Touch</div>
+  <div class="contact-grid">
+    <div>
+      <h2 class="contact-tagline">Let's Build<br>Something <span>Deep.</span></h2>
+    </div>
+    <div class="contact-info">
+      <div class="contact-item">
+        <div class="contact-label">Company</div>
+        <div class="contact-value">DSTR Infrastructures and Projects</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-label">Contact Person</div>
+        <div class="contact-value">Mr. D. Sathi Reddy</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-label">Phone</div>
+        <div class="contact-value">
+          <a href="tel:+919811199679">+91 98111 99679</a><br>
+          <a href="tel:+919311199677">+91 93111 99677</a>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-label">Email</div>
+        <div class="contact-value"><a href="mailto:dstr.dsr2244@gmail.com">dstr.dsr2244@gmail.com</a></div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-label">Address</div>
+        <div class="contact-value">L-2/143B, DDA Flats, Kalkaji<br>New Delhi — 110019, India</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">DSTR Infrastructures and Projects</div>
+  <div class="footer-copy">&nbsp; New Delhi, India</div>
+</footer>
+
+<script>
+  function toggleProject(id) {
+    const card = document.getElementById(id);
+    const body = document.getElementById('body-' + id);
+    const icon = document.getElementById('icon-' + id);
+    const isOpen = card.classList.contains('open');
+
+    // Close all
+    document.querySelectorAll('.project-card').forEach(c => c.classList.remove('open'));
+    document.querySelectorAll('.project-body').forEach(b => b.classList.remove('open'));
+    document.querySelectorAll('.toggle-icon').forEach(i => i.textContent = '+');
+
+    if (!isOpen) {
+      card.classList.add('open');
+      body.classList.add('open');
+      icon.textContent = '−';
+      setTimeout(() => body.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+    }
+  }
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.service-card, .client-card, .location-card, .project-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+</script>
+
+</body>
+</html>
